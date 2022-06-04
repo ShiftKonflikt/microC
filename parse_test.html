@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+
+    <script src="parser.js"></script> 
+    <script src="semantics.js"></script> 
+    <script src="codegen.js"></script>
+    <script src="stdlib.js"></script>    
+    <script src="https://bundle.run/object-scan@13.8.0"></script>
+    <script src="https://bundle.run/object-treeify@1.1.31"></script>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+
+
+html, body {
+  height: 100%;
+  
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 25%;
+  height: 100%;
+  padding-left: 0px;
+  padding-top: 0px;
+  /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  
+  
+  clear: both;
+  height: 100%;
+  
+}
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+
+
+
+ </style>
+<body>
+
+
+<div class="row">
+  <div class="column" style="background-color:#aaa;">
+    <h1>μC compiler</h1>
+
+    <form>
+    
+    </form>
+    <br>
+    <textarea id="editor" rows="4" cols="50" name="comment" form="usrform">
+    </textarea><br>
+    <button onclick="compiler()">Compile</button> 
+    
+    <p>Enter code and submit</p>
+    <textarea id="compiled" rows="4" cols="50" name="comment" form="usrform">
+    </textarea><br>
+    <p>O/P here</p>
+    <canvas id="myCanvas" width="450" height="500" style="border:1px solid #000000;" ></canvas>
+    <p>Graphics here</p>
+    <script>
+    
+    function compiler(){
+    var script = document.createElement('script');
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('src', 'scanner.js');
+    document.head.appendChild(script);
+    var code;
+    script.onload=function(){
+    parse();
+    }
+    
+    
+    
+    
+    }
+    
+    
+    </script>
+\
+    <br><br>
+  </div>
+  <div class="column" style="background-color:#bbb;">
+    <h2>Compiler</h2>
+    <p>this is a attempt to support full c-- compiler that outputs wasm</p>
+    <p>no support for floating points and strings currently</p>
+    .
+    .
+  </div>
+  <div id="Token" class="column" style="background-color:#aaa;">
+    <h2>Token List</h2>
+
+
+</div>
+
+<div id="Token" class="column" style="background-color:#bbb;">
+    <h2>Concrete syntax tree</h2>
+
+
+</div>
+  
+</div>
+<script>
+    const treeify = (input) => {
+  const tree = objectScan(['**[*]'], {
+    reverse: false,
+    breakFn: ({ isMatch, value, context }) => {
+      if (isMatch) {
+        const cur = context[context.length - 1];
+        const name = value.Item.Name;
+        if (!(name in cur)) {
+          cur[name] = {};
+        }
+        context.push(cur[name]);
+      }
+    },
+    filterFn: ({ context }) => {
+      context.pop();
+    }
+  })(input, [{}])[0];
+  return objectTreeify(tree);
+};
+    function  tokprint(a){
+            
+                document.getElementById("Token").value = document.getElementById("Token").value + treeify(a);
+            
+            
+        }
+    
+    </script>
+<!-- Thank you W3 schools for styling-->
+</body>
+</html>
