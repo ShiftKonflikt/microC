@@ -18,41 +18,46 @@ var type_sec = function(){
   }
   loc_arr.push(0x01); 
   loc_arr.push(0x00); 
-  loc_arr.push(lis_funcs.length); //
+  //lis_funcs.length
+  var len = unsignedLEB128(lis_funcs.length);
+  loc_arr.push(... len); //
   for(var i =0 ; i<lis_funcs.length;i++)
   {
   loc_arr.push(0x60); 
   var num_pars = lis_funcs[i].parlen;
-  loc_arr.push(num_pars); // 
+  loc_arr.push(...unsignedLEB128(num_pars)); // 
   for(var j =0 ; j<lis_funcs.length;j++){
     loc_arr.push(0x7e); 
   }
   loc_arr.push(0x01);  
   loc_arr.push(0x7e); 
   }
-  loc_arr[1] = loc_arr.length - 2; 
+  loc_arr[1] = unsignedLEB128(loc_arr.length - 2); 
   return loc_arr;
 }
 
 var import_sec = function(){
   var imp_arr = [];
   imp_arr.push(0x02);
-
-
+/*
+Gotta work on this */
 
   return imp_arr;
   
 }
 var func_sec = function(){
  var func_arr =[];
+ if(lis_funcs == []){
+  return [];
+}
  func_arr.push(0x03);
  func_arr.push(0x00);
- func_arr.push(lis_funcs.length);
+ func_arr.push(...unsignedLEB128(lis_funcs.length));
  for(var j =0 ; j<lis_funcs.length;j++){
-  func_arr.push(j);
- }pioneere
+  func_arr.push(unsignedLEB128(j));
+ }
  
- func_arr[1]=func_arr.length - 2;
+ func_arr[1]=unsignedLEB128(func_arr.length - 2);
 
 }
  var gvars_sec = function(){   
@@ -76,15 +81,32 @@ var func_sec = function(){
     //console.log(cod_arr.length);
 
     }
-    var start = function(){
+    var start_sec = function(){
       var stat = -1;
+      var start_arr = [];
       for(var k=0;k<lis_funcs.length;k++){
         if(lis_funcs[k].ident == "main"){
-          stat =0;
+          stat =k;
+          break;
+
         }
       }
+      if(stat == -1){
+        return [];
+      }
+      else{
+        start_arr.push(0x08);
+        start_arr.push(0x00);
+        start_arr.push(...unsignedLEB128(stat));
+        start_arr.push(unsignedLEB128(start_arr.length - 2));
+      }
     }
-
+    var code_sec = function(){
+    var inst_arr = [];
+    
+    
+    
+    }
   var validate_donload = function(){
     var y =Uint8Array.from([
       ...cod_arr,
@@ -139,3 +161,6 @@ function gen_code(){
 
 
 }
+/*
+https://blog.kallisti.net.nz/2008/02/extension-to-the-shunting-yard-algorithm-to-allow-variable-numbers-of-arguments-to-functions/
+*/
