@@ -74,7 +74,13 @@ class simp_expr{
         this.q=x;
     }
 }
-
+class out_node{
+    constructor(a,b){
+        this.this.node_type = nodes.out_node;
+        this.a=a;
+        this.b=b;
+    }
+}
 class expr_node{
     constructor(val){
         this.node_type=nodes.expr;
@@ -94,13 +100,15 @@ class expr_node{
     }
 
     class function_node{
-    constructor(type,name,params,node_type,stmts){
+    constructor(type,name,params,node_type,stmts,lvar){
         this.node_type=node_type;
     this.type=type;
     this.ident=name;
     this.params=params;
     this.body = stmts;
+    this.lvars= lvar;
     this.parlen = params.length;
+    this.lvarlen = lvar.length;
     }
     }
 
@@ -641,7 +649,24 @@ function parse_dcl(k){
     }
 
 
-
+function parse_out(){
+    var x;
+    x=get_token();
+    if(x==tokens.T_EOF){eof_pars();}
+    else if(x.type == tokens.T_INT_LIT){
+        var z;
+        z=get_token();
+        if(z==tokens.T_EOF){eof_pars();}
+        else if(z.type == tokens.T_INT_LIT){
+            var j;
+            j = get_token();
+            if(j==tokens.T_EOF){eof_pars();}
+            else if(z.type == tokens.T_SEMICOLON){
+                   return new out_node(x.val,z.val);
+            }
+        }
+    }
+}
 
 function parse_stmt(k){
     var stmt;
@@ -652,8 +677,9 @@ function parse_stmt(k){
               stmt = parse_expr(k);
              return stmt;
         }
-        
-
+        else if(k.type==tokens.T_OUT){
+            return parse_out();
+        }
 
 
 
@@ -822,7 +848,7 @@ function parse_func(temp_type,temp_ID){
         stmt_lis.push(obn);
     }
     check_lvars(param_lis,lvars);
-    return new function_node(temp_type,temp_ID,param_lis,nodes.Func_decl,stmt_lis);
+    return new function_node(temp_type,temp_ID,param_lis,nodes.Func_decl,stmt_lis,lvars);
 }
     
 

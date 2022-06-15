@@ -1,4 +1,4 @@
-var print ={   print: function(a,b){
+var print ={   out: function(a,b){
     if(a==0){
         document.getElementById("compiled").value = document.getElementById("compiled").value + b;
     }

@@ -20,7 +20,12 @@ var type_sec = function(){
   loc_arr.push(0x00); 
   //lis_funcs.length
   var len = unsignedLEB128(lis_funcs.length);
-  loc_arr.push(... len); //
+  loc_arr.push(... len+1); //
+  loc_arr.push(0x60); 
+  loc_arr.push(0x02); 
+  loc_arr.push(0x7e); 
+  loc_arr.push(0x7e); 
+  loc_arr.push(0x00);
   for(var i =0 ; i<lis_funcs.length;i++)
   {
   loc_arr.push(0x60); 
@@ -29,20 +34,42 @@ var type_sec = function(){
   for(var j =0 ; j<lis_funcs.length;j++){
     loc_arr.push(0x7e); 
   }
+  if(lis_funcs[i].type != tokens.T_VOID){
   loc_arr.push(0x01);  
-  loc_arr.push(0x7e); 
+  loc_arr.push(0x7e); }
+  else{
+    loc_arr.push(0x00);  
+
   }
-  loc_arr[1] = unsignedLEB128(loc_arr.length - 2); 
-  return loc_arr;
+  }
+ // loc_arr[1] = unsignedLEB128(loc_arr.length - 2); 
+  return [
+    ...loc_arr[0],
+    ...unsignedLEB128(loc_arr.length - 2),
+    ...loc_arr.slice(2,)
+    
+  ];
 }
 
 var import_sec = function(){
   var imp_arr = [];
   imp_arr.push(0x02);
-/*
-Gotta work on this */
+  imp_arr.push(0x00);
+  imp_arr.push(0x01);
+  imp_arr.push(0x05);
+  imp_arr.push(0x7072696E74);
+  imp_arr.push(0x03);
+  imp_arr.push(0x6F7574);
+  imp_arr.push(0x00);
+  imp_arr.push(0x00);
+  //imp_arr[1] = unsignedLEB128(imp_arr.length - 2); 
 
-  return imp_arr;
+  return    [
+    ...imp_arr[0],
+    ...unsignedLEB128(imp_arr.length - 2),
+    ...imp_arr.slice(2,)
+    
+  ];
   
 }
 var func_sec = function(){
@@ -54,11 +81,16 @@ var func_sec = function(){
  func_arr.push(0x00);
  func_arr.push(...unsignedLEB128(lis_funcs.length));
  for(var j =0 ; j<lis_funcs.length;j++){
-  func_arr.push(unsignedLEB128(j));
+  func_arr.push(...unsignedLEB128(j+1));
  }
  
- func_arr[1]=unsignedLEB128(func_arr.length - 2);
-
+ //func_arr[1]=unsignedLEB128(func_arr.length - 2);
+ return    [
+  ...func_arr[0],
+  ...unsignedLEB128(func_arr.length - 2),
+  ...func_arr.slice(2,)
+  
+];
 }
  var gvars_sec = function(){   
     cod_arr.push(0x06);
@@ -71,11 +103,11 @@ var func_sec = function(){
     //console.log(global_decls.length);
     //cod_arr.push(0x02);
     for(var i=0;i<size;i++){
-        cod_arr.push(0x7E);
-        cod_arr.push(0x01);
-            cod_arr.push(0x42);
-                cod_arr.push(0x00);
-                    cod_arr.push(0x0B);
+     cod_arr.push(0x7E);
+     cod_arr.push(0x01);
+     cod_arr.push(0x42);
+     cod_arr.push(0x00);
+     cod_arr.push(0x0B);
         
     }
     //console.log(cod_arr.length);
@@ -98,11 +130,45 @@ var func_sec = function(){
         start_arr.push(0x08);
         start_arr.push(0x00);
         start_arr.push(...unsignedLEB128(stat));
-        start_arr.push(unsignedLEB128(start_arr.length - 2));
+        //start_arr.push(...unsignedLEB128(start_arr.length - 2));
+        return    [
+          ...start_arr[0],
+          ...unsignedLEB128(func_arr.length - 2),
+          ...func_arr.slice(2,)
+          
+        ];
       }
     }
     var code_sec = function(){
     var inst_arr = [];
+    if(lis_funcs == []){
+      return [];
+    }
+    inst_arr.push(0x0a);
+    inst_arr.push(0x00);
+    inst_arr.push(...unsignedLEB128(lis_funcs.length));
+    for(var i =0;i<lis_funcs.length;i++){
+      var bod=[]
+      bod.push(0x00);
+      bod.push(0x00); // fix local variables later
+      for(var j =0;j<lis_funcs[i].body.length;j++){
+         if(lis_funcs[i].body[j].node_type==nodes.out_node){
+          var par0 = lis_funcs[i].body[j].a;
+          var par1 = lis_funcs[i].body[j].b;
+          /*to do 2 i64 const and call function at index 0 */
+          bod.push(0x42);
+          bod.push(...unsignedLEB128(par0));
+          bod.push(0x42);
+          bod.push(...unsignedLEB128(par1));
+          bod.push(0x10);
+          bod.push(0x00);
+         }
+      }
+      /* adding explicit return statements rn */
+      
+      bod.push(0x0b);
+      bod[1] = unsignedLEB128( bod.length() -2 )
+    }
     
     
     

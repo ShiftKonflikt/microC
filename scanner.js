@@ -45,7 +45,8 @@ var tokens ={
         T_sqb_OP:38,
         T_sqb_CLO:39,
         T_NL:40,
-        T_INCOMPLETE:41
+        T_INCOMPLETE:41,
+        T_OUT:42
         
 };
 
@@ -57,7 +58,8 @@ var nodes ={
           func_local_vars:4,
           assign:5,
           expr:6,
-          simple_expr:7
+          simple_expr:7,
+          out_node:8
 
 
 };
@@ -113,7 +115,8 @@ const debug =[
         "T_CR",
         "T_MUL",
         "T_sqb_OP",
-        "T_sqb_CLO"
+        "T_sqb_CLO",
+        "T_OUT"
 
 
 ]
@@ -173,6 +176,9 @@ function  keywrd(val){
    else if(val=="return"){
                 return tokens.T_RET;
             }
+    else if(val=="out"){
+           return tokens.T_OUT;
+    }
    else{ return -1;}  
 
 }
