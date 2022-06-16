@@ -92,7 +92,7 @@ var func_sec = function(){
   
 ];
 }
- var gvars_sec = function(){   
+/* var gvars_sec = function(){   
     cod_arr.push(0x06);
     //console.log(cod_arr.length,cod_arr);
     var size=global_vars.length;
@@ -112,7 +112,7 @@ var func_sec = function(){
     }
     //console.log(cod_arr.length);
 
-    }
+    }*/
     var start_sec = function(){
       var stat = -1;
       var start_arr = [];
@@ -167,25 +167,60 @@ var func_sec = function(){
       /* adding explicit return statements rn */
       
       bod.push(0x0b);
-      bod[1] = unsignedLEB128( bod.length() -2 )
+     // bod[1] = unsignedLEB128( bod.length() -1 );
+      inst_arr.push(...unsignedLEB128( bod.length() -1 ),
+        ...bod.slice(1,)
+        );
     }
-    
-    
-    
-    }
-  var validate_donload = function(){
-    var y =Uint8Array.from([
-      ...cod_arr,
+    return    [
+      ...inst_arr[0],
+      ...unsignedLEB128(inst_arr.length - 2),
+      ...inst_arr.slice(2,)
       
-    ]);
-     console.log(y);
-     console.log( WebAssembly.validate(y));
-     downloadBlob(y,'download.wasm', 'application/octet-stream');}
+    ];
+    
+    
+    
+    }
 
 
 
-
-
+var x = type_sec();
+if(x != []){
+  cod_arr = [
+    ...cod_arr,
+    ...x
+  ]
+}
+var y = import_sec();
+if(x != []){
+  cod_arr = [
+    ...cod_arr,
+    ...y
+  ]
+}
+var z = func_sec();
+if(x != []){
+  cod_arr = [
+    ...cod_arr,
+    ...z
+  ]
+}
+// GLOBAL VARIABLES SECTION TO BE ADDED
+var a = start_sec();
+if(x != []){
+  cod_arr = [
+    ...cod_arr,
+    ...a
+  ]
+}
+var b = code_sec();
+if(x != []){
+  cod_arr = [
+    ...cod_arr,
+    ...b
+  ]
+}
 
 }
 
@@ -220,11 +255,24 @@ downloadBlob = function(data, fileName, mimeType) {
     a.remove();
   };
   
-
+  var validate_donload = function(){
+    var y =Uint8Array.from([
+      ...cod_arr,
+      
+    ]);
+     console.log(y);
+     console.log( WebAssembly.validate(y));
+     downloadBlob(y,'download.wasm', 'application/octet-stream');}
+function download(){
+      validate_donload();
+     }
+function RUN(){
+  const instance = await WebAssembly.instantiate(cod_arr);
+}
 function gen_code(){
     gen_globals();
-    
-
+    document.getElementById("run").style.visibility = "visible";
+    document.getElementById("DOWNLOAD").style.visibility = "visible";
 
 }
 /*
