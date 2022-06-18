@@ -245,7 +245,8 @@ else{return make_node(x,iden_tem,0) ;}
 //end of identifier detection
                        }
 
-else if( (isdigit(ch)) ==true ){  var tem =  parse_int(ch); return make_node(tokens.T_INT_LIT,'\0',tem) ;}
+else if( (isdigit(ch)) ==true ){  var tem =  parse_int(ch); //console.log("scan "+tem)
+     return make_node(tokens.T_INT_LIT,'\0',tem) ;}
 
 else{
         switch (ch)

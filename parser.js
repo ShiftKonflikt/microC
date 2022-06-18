@@ -76,7 +76,7 @@ class simp_expr{
 }
 class out_node{
     constructor(a,b){
-        this.this.node_type = nodes.out_node;
+        this.node_type = nodes.out_node;
         this.a=a;
         this.b=b;
     }
@@ -652,19 +652,32 @@ function parse_dcl(k){
 function parse_out(){
     var x;
     x=get_token();
+    var m = x.val;
     if(x==tokens.T_EOF){eof_pars();}
     else if(x.type == tokens.T_INT_LIT){
         var z;
         z=get_token();
+        var n = z.val;
         if(z==tokens.T_EOF){eof_pars();}
         else if(z.type == tokens.T_INT_LIT){
             var j;
             j = get_token();
             if(j==tokens.T_EOF){eof_pars();}
-            else if(z.type == tokens.T_SEMICOLON){
-                   return new out_node(x.val,z.val);
+            else if(j.type == tokens.T_SEMICOLON){
+                
+                   return new out_node(m,n);
             }
+            else{
+                exp_err("T_SEMICOLON",x.type,nl_cnt)
+            }
+
         }
+        else{
+            exp_err("T_INT_LIT",x.type,nl_cnt)
+        }
+    }
+    else{
+        exp_err("T_INT_LIT",x.type,nl_cnt)
     }
 }
 
@@ -705,6 +718,7 @@ else if((x.type == tokens.T_VOID)||(x.type == tokens.T_CHAR_DECL)||(x.type == to
 
 }
 else{
+   
     exp_err("Type",debug[x.type],nl_cnt); 
 }
 //token_handle(x);
@@ -833,11 +847,11 @@ function parse_func(temp_type,temp_ID){
     toknum=toknum+1;
     if(x==tokens.T_EOF){eof_pars();}
     else if(x.type == tokens.T_CURL_CLO){
-        
-    return new function_node(temp_type,temp_ID,param_lis,nodes.Func_decl,stmt_lis);
+        //alert("detected");
+    return new function_node(temp_type,temp_ID,param_lis,nodes.Func_decl,stmt_lis,lvars);
     }
     else if((x.type == tokens.T_VOID)||(x.type == tokens.T_CHAR_DECL)||(x.type == tokens.T_INT_DECL)){
-         obn= parse_dcl(x.type);
+        obn= parse_dcl(x.type);
         universe.push(obn);
         lvars.push(obn);
     }
@@ -848,10 +862,10 @@ function parse_func(temp_type,temp_ID){
         stmt_lis.push(obn);
     }
     check_lvars(param_lis,lvars);
-    return new function_node(temp_type,temp_ID,param_lis,nodes.Func_decl,stmt_lis,lvars);
+    
 }
     
-
+return new function_node(temp_type,temp_ID,param_lis,nodes.Func_decl,stmt_lis,lvars);
 
 
 
@@ -943,7 +957,7 @@ while(1){
         asts.push(obn);}
       }
     else{
-        
+        //alert("base")
         exp_err("type",debug[x.type],nl_cnt);
         
     }

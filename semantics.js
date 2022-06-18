@@ -10,7 +10,14 @@ function add_decl(ob){
     
     var j =global_decls.length;
     if(j==0){
-        global_decls.push(ob);
+        if(ob.node_type == nodes.Glob_var ){
+            global_vars.push(ob);
+        }
+        else if(ob.node_type == nodes.Func_decl ){
+         //   console.log("yes")
+            lis_funcs.push(ob);
+        }
+       // global_decls.push(ob);
     }
     else{
     for(var i=0;i<j;i++){
@@ -24,6 +31,7 @@ function add_decl(ob){
                 global_vars.push(ob);
             }
             else if(ob.node_type == nodes.Func_decl ){
+               // console.log("yes")
                 lis_funcs.push(ob);
             }
             //console.log("yes",global_decls);
@@ -32,6 +40,7 @@ function add_decl(ob){
   
     }
 }
+//console.log(lis_funcs)
 }
 
 function check_lvars(j,k){
@@ -54,7 +63,8 @@ function check_lvars(j,k){
 
 
 function semantic_(xi){
-
+  //  console.log("x")
     add_decl(xi);
+
     
 }
