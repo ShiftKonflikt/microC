@@ -27,7 +27,21 @@ function unsignedLEB128(n) {
     return buffer;
   };
   
-
+  signedLEB128 = function(n){
+    const buffer = [];
+    let more = true;
+    while (more) {
+      let byte = n & 0x7f;
+      n >>>= 7;
+      if ((n === 0 && (byte & 0x40) === 0) || (n === -1 && (byte & 0x40) !== 0)) {
+        more = false;
+      } else {
+        byte |= 0x80;
+      }
+      buffer.push(byte);
+    }
+    return buffer;
+  }; 
 
 
 function leb128(n){

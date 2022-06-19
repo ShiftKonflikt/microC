@@ -170,11 +170,12 @@ var func_sec = function(){
           var par0 = lis_funcs[i].body[j].a;
           var par1 = lis_funcs[i].body[j].b;
           //console.log(lis_funcs[i].body[j])
+         // console.log(par0,par1);
           /*to do 2 i64 const and call function at index 0 */
           bod.push(0x42);
-          bod.push(par0);
+          bod.push(...signedLEB128(par0));
           bod.push(0x42);
-          bod.push(par1);
+          bod.push(...signedLEB128(par1));
           bod.push(0x10);
           bod.push(0x00);
          }
@@ -267,7 +268,7 @@ downloadBlob = function(data, fileName, mimeType) {
     a.download = fileName;
     document.body.appendChild(a);
     a.style = 'display: none';
-   //a.click();
+    a.click();
     a.remove();
   };
   
@@ -283,7 +284,7 @@ function DOWNLOAD(){
       validate_donload();
      }
 function RUN(){
-  var y =Uint8Array.from([
+  var y =Uint8ClampedArray.from([
     ...cod_arr,
     
   ]);
@@ -294,8 +295,10 @@ function RUN(){
           document.getElementById("compiled").value = document.getElementById("compiled").value + b;
       }
       else{
-        console.log(b.type)
-        document.getElementById("compiled").value = document.getElementById("compiled").value + String.fromCharCode(b);
+        //console.log(b)
+        const myBigInt = BigInt(b);  // `10n` also works
+        const myNumber = Number(myBigInt);
+        document.getElementById("compiled").value = document.getElementById("compiled").value + String.fromCharCode(myNumber);
       }
   }
   }
