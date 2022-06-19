@@ -49,7 +49,7 @@ html, body {
 
 
  </style>
-<body>
+<body onload="urche()">
 
 
 <div class="row">
@@ -128,6 +128,33 @@ html, body {
             
         }
     
+    </script>
+    <script>
+      var base = 0;
+      function urche(){
+         var url = window.location.href;
+         var parts = url.split("?");
+         if(parts.length == 2){
+          var base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+          if(base64regex.test(parts[1])==true){
+            console.log("yes")
+            document.getElementById("editor").value = atob(parts[1]);
+            var script = document.createElement('script');
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('src', 'scanner.js');
+    document.head.appendChild(script);
+    var code;
+    base = 1;
+    script.onload=function(){
+            parse();}
+          }
+          else{
+           console.log( base64regex.test(parts[1]) )
+          }
+           }
+        else{
+          console.log(parts.length)
+}}
     </script>
 <!-- Thank you W3 schools for styling-->
 </body>
